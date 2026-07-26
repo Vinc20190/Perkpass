@@ -57,8 +57,8 @@ export default function SignupPage() {
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Left: brand panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary to-primary-hover p-12 text-white lg:flex">
-        <div className="pointer-events-none absolute inset-0 bg-kente opacity-20" />
-        <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-kente opacity-15" />
+        <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
         <div className="relative">
           <Logo size="md" variant="light" />
         </div>
@@ -87,7 +87,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right: form */}
-      <div className="spotlight-grid flex items-center justify-center bg-background bg-grid bg-grid-fade p-6">
+      <div className="spotlight-grid flex items-center justify-center bg-background bg-grid p-6">
         <Spotlight />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -204,7 +204,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading || success}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground shadow-glow transition-all hover:bg-primary-hover disabled:opacity-60"
+              className="btn-shine inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-secondary font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-[1.02] disabled:opacity-60"
             >
               {loading ? t('common.loading') : t('auth.signup.submit')}
               {!loading && !success && <ArrowRight className="h-5 w-5" />}
@@ -230,7 +230,7 @@ export default function SignupPage() {
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             {t('auth.haveAccount')}{' '}
-            <Link href="/login" className="font-semibold text-primary hover:text-primary-hover">{t('auth.loginLink')}</Link>
+            <Link href="/login" className="font-semibold text-secondary hover:opacity-80">{t('auth.loginLink')}</Link>
           </p>
         </motion.div>
       </div>

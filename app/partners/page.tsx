@@ -19,7 +19,7 @@ export default function PartnersPage() {
     <>
       <Header />
       <main>
-        <section className="spotlight-grid relative overflow-hidden bg-background bg-grid bg-grid-fade pt-28 pb-20 sm:pt-32">
+        <section className="spotlight-grid relative overflow-hidden bg-background bg-grid pt-28 pb-20 sm:pt-32">
           <Spotlight />
           <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
@@ -35,7 +35,7 @@ export default function PartnersPage() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="mt-8"
             >
-              <a href="/contact" className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-7 font-semibold text-primary-foreground shadow-glow transition-all hover:bg-primary-hover">Get Started</a>
+              <a href="/contact" className="btn-shine inline-flex h-12 items-center gap-2 rounded-xl bg-secondary px-7 font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-105">Get Started</a>
             </motion.div>
           </div>
         </section>

@@ -20,13 +20,13 @@ export default function AboutPage() {
     <>
       <Header />
       <main>
-        <section className="spotlight-grid relative overflow-hidden bg-background bg-grid bg-grid-fade pt-28 pb-20 sm:pt-32">
+        <section className="spotlight-grid relative overflow-hidden bg-background bg-grid pt-28 pb-20 sm:pt-32">
           <Spotlight />
-          <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
+          <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <motion.span
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary"
+              className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-1.5 text-sm font-semibold text-secondary"
             >About PerkPass</motion.span>
             <motion.h1
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -49,8 +49,8 @@ export default function AboutPage() {
                   transition={{ delay: i * 0.06 }}
                   className="rounded-2xl border border-border bg-card p-6 shadow-premium"
                 >
-                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-primary/10">
-                    <v.icon className="h-6 w-6 text-primary" />
+                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-secondary/10">
+                    <v.icon className="h-6 w-6 text-secondary" />
                   </div>
                   <h3 className="mt-4 font-display text-lg font-bold text-foreground">{v.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{v.desc}</p>
@@ -71,7 +71,7 @@ export default function AboutPage() {
                 { value: '$18M+', label: 'Saved by members' },
               ].map((s) => (
                 <div key={s.label}>
-                  <p className="font-display text-3xl font-extrabold text-primary sm:text-4xl">{s.value}</p>
+                  <p className="font-display text-3xl font-extrabold text-secondary sm:text-4xl">{s.value}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
                 </div>
               ))}

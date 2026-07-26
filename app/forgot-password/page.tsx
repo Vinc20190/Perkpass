@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="spotlight-grid grid min-h-screen place-items-center bg-background bg-grid bg-grid-fade p-6">
+    <div className="spotlight-grid grid min-h-screen place-items-center bg-background bg-grid p-6">
       <Spotlight />
       <motion.div
         initial={{ opacity: 0, y: 20 }}

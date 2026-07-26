@@ -18,7 +18,7 @@ import { DashboardSidebar, DashboardTopBar } from '@/components/dashboard/sideba
 import { formatCents } from '@/lib/utils';
 import type { Employee, RewardAssignment, RewardCatalogItem, Department } from '@/lib/types';
 
-const CHART_COLORS = ['#F96324', '#0D9488', '#F5B301', '#3B82F6', '#8B5CF6', '#EC4899', '#10B981', '#F43F5E'];
+const CHART_COLORS = ['#1e3a5f', '#e8b84a', '#c89730', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f43f5e'];
 
 export default function AnalyticsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
   })).filter((d) => d.value > 0);
 
   // Engagement radial
-  const engagementData = [{ name: 'engagement', value: engagementRate, fill: '#F96324' }];
+  const engagementData = [{ name: 'engagement', value: engagementRate, fill: '#1e3a5f' }];
 
   const exportReport = () => {
     const lines = [
@@ -200,12 +200,12 @@ export default function AnalyticsPage() {
                     <AreaChart data={monthlyTrend}>
                       <defs>
                         <linearGradient id="gAssign" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#F96324" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#F96324" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#1e3a5f" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#1e3a5f" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="gRedeem" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0D9488" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#0D9488" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#e8b84a" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#e8b84a" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -213,8 +213,8 @@ export default function AnalyticsPage() {
                       <YAxis tick={{ fontSize: 12, fill: '#475569' }} allowDecimals={false} />
                       <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }} />
                       <Legend wrapperStyle={{ fontSize: 13 }} />
-                      <Area type="monotone" dataKey="assigned" stroke="#F96324" strokeWidth={2} fill="url(#gAssign)" name="Assigned" />
-                      <Area type="monotone" dataKey="redeemed" stroke="#0D9488" strokeWidth={2} fill="url(#gRedeem)" name="Redeemed" />
+                      <Area type="monotone" dataKey="assigned" stroke="#1e3a5f" strokeWidth={2} fill="url(#gAssign)" name="Assigned" />
+                      <Area type="monotone" dataKey="redeemed" stroke="#e8b84a" strokeWidth={2} fill="url(#gRedeem)" name="Redeemed" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#475569' }} />
                         <YAxis tick={{ fontSize: 12, fill: '#475569' }} />
                         <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                        <Bar dataKey="spend" fill="#F5B301" radius={[6, 6, 0, 0]} name="Spend (USD)" />
+                        <Bar dataKey="spend" fill="#c89730" radius={[6, 6, 0, 0]} name="Spend (USD)" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -245,7 +245,7 @@ export default function AnalyticsPage() {
                   <div className="mt-6 h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <RadialBarChart cx="50%" cy="50%" innerRadius="50%" outerRadius="90%" barSize={24} data={engagementData} startAngle={90} endAngle={90 - (engagementRate / 100) * 360}>
-                        <RadialBar background dataKey="value" cornerRadius={12} fill="#F96324" />
+                        <RadialBar background dataKey="value" cornerRadius={12} fill="#1e3a5f" />
                         <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="font-display" style={{ fontSize: 36, fontWeight: 800, fill: '#0F172A' }}>
                           {engagementRate}%
                         </text>
@@ -269,8 +269,8 @@ export default function AnalyticsPage() {
                           <YAxis tick={{ fontSize: 12, fill: '#475569' }} allowDecimals={false} />
                           <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }} />
                           <Legend wrapperStyle={{ fontSize: 13 }} />
-                          <Bar dataKey="assignments" fill="#F96324" radius={[6, 6, 0, 0]} name="Assignments" />
-                          <Bar dataKey="redeemed" fill="#0D9488" radius={[6, 6, 0, 0]} name="Redeemed" />
+                          <Bar dataKey="assignments" fill="#1e3a5f" radius={[6, 6, 0, 0]} name="Assignments" />
+                          <Bar dataKey="redeemed" fill="#e8b84a" radius={[6, 6, 0, 0]} name="Redeemed" />
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (

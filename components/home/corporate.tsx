@@ -19,9 +19,9 @@ export function CorporateSection() {
 
   return (
     <section className="relative overflow-hidden bg-foreground py-20 text-white sm:py-28">
-      <div className="pointer-events-none absolute inset-0 bg-kente opacity-30" />
-      <div className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-secondary/15 blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 bg-kente opacity-15" />
+      <div className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-secondary/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
@@ -30,7 +30,7 @@ export function CorporateSection() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/15 px-4 py-1.5 text-sm font-semibold text-primary"
+              className="inline-flex items-center gap-2 rounded-full border border-secondary/40 bg-secondary/10 px-4 py-1.5 text-sm font-semibold text-secondary"
             >
               <Globe2 className="h-4 w-4" /> PerkPass for Business
             </motion.span>
@@ -63,7 +63,7 @@ export function CorporateSection() {
             >
               <Link
                 href="/signup"
-                className="group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-7 font-semibold text-primary-foreground shadow-glow transition-all hover:bg-primary-hover"
+                className="btn-shine group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-secondary px-7 font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-105"
               >
                 {t('corporate.cta')}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -85,10 +85,10 @@ export function CorporateSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition-colors hover:border-primary/30 hover:bg-white/10"
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition-colors hover:border-secondary/30 hover:bg-white/10"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15">
-                  <f.icon className="h-6 w-6 text-primary" strokeWidth={2.2} />
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-secondary/15">
+                  <f.icon className="h-6 w-6 text-secondary" strokeWidth={2.2} />
                 </div>
                 <h3 className="mt-3 font-display text-base font-bold">{t(f.key)}</h3>
                 <p className="mt-1.5 text-sm text-white/60">{f.desc}</p>

@@ -25,9 +25,9 @@ export default function ContactPage() {
     <>
       <Header />
       <main>
-        <section className="spotlight-grid relative overflow-hidden bg-background bg-grid bg-grid-fade pt-28 pb-20 sm:pt-32">
+        <section className="spotlight-grid relative overflow-hidden bg-background bg-grid pt-28 pb-20 sm:pt-32">
           <Spotlight />
-          <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
+          <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
           <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <motion.h1
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -86,7 +86,7 @@ export default function ContactPage() {
                       </div>
                       <input type="text" required placeholder="Subject" value={subject} onChange={(e) => setSubject(e.target.value)} className="h-11 w-full rounded-xl border border-input bg-card px-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
                       <textarea required rows={5} placeholder="Your message..." value={message} onChange={(e) => setMessage(e.target.value)} className="w-full rounded-xl border border-input bg-card px-3 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                      <button type="submit" disabled={loading} className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 font-semibold text-primary-foreground shadow-glow hover:bg-primary-hover disabled:opacity-60">
+                      <button type="submit" disabled={loading} className="btn-shine inline-flex h-11 items-center gap-2 rounded-xl bg-secondary px-6 font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-[1.02] disabled:opacity-60">
                         {loading ? 'Sending...' : <><Send className="h-4 w-4" /> Send message</>}
                       </button>
                     </form>

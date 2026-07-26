@@ -37,8 +37,8 @@ export default function LoginPage() {
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Left: brand panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-foreground p-12 text-white lg:flex">
-        <div className="pointer-events-none absolute inset-0 bg-kente opacity-25" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-kente opacity-15" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
         <div className="relative">
           <Logo size="md" variant="light" />
         </div>
@@ -56,7 +56,7 @@ export default function LoginPage() {
           </p>
           <div className="mt-8 grid grid-cols-3 gap-6">
             <div>
-              <p className="font-display text-3xl font-extrabold text-primary">250K+</p>
+              <p className="font-display text-3xl font-extrabold text-secondary">250K+</p>
               <p className="text-sm text-white/60">Members</p>
             </div>
             <div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
               <p className="text-sm text-white/60">Partners</p>
             </div>
             <div>
-              <p className="font-display text-3xl font-extrabold text-accent">54</p>
+              <p className="font-display text-3xl font-extrabold text-secondary">54</p>
               <p className="text-sm text-white/60">Countries</p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right: form */}
-      <div className="spotlight-grid flex items-center justify-center bg-background bg-grid bg-grid-fade p-6">
+      <div className="spotlight-grid flex items-center justify-center bg-background bg-grid p-6">
         <Spotlight />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -141,7 +141,7 @@ export default function LoginPage() {
                 <input type="checkbox" className="rounded border-input accent-primary" />
                 {t('auth.remember')}
               </label>
-              <Link href="/forgot-password" className="text-sm font-semibold text-primary hover:text-primary-hover">
+              <Link href="/forgot-password" className="text-sm font-semibold text-secondary hover:opacity-80">
                 {t('auth.forgot')}
               </Link>
             </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground shadow-glow transition-all hover:bg-primary-hover disabled:opacity-60"
+              className="btn-shine inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-secondary font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-[1.02] disabled:opacity-60"
             >
               {loading ? t('common.loading') : t('auth.login.submit')}
               {!loading && <ArrowRight className="h-5 w-5" />}
@@ -175,7 +175,7 @@ export default function LoginPage() {
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             {t('auth.noAccount')}{' '}
-            <Link href="/signup" className="font-semibold text-primary hover:text-primary-hover">{t('auth.signUpLink')}</Link>
+            <Link href="/signup" className="font-semibold text-secondary hover:opacity-80">{t('auth.signUpLink')}</Link>
           </p>
         </motion.div>
       </div>

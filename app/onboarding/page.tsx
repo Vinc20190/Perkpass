@@ -91,7 +91,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="spotlight-grid grid min-h-screen place-items-center bg-background bg-grid bg-grid-fade p-6">
+    <div className="spotlight-grid grid min-h-screen place-items-center bg-background bg-grid p-6">
       <Spotlight />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -166,14 +166,14 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 rounded-xl bg-secondary/10 px-4 py-3 text-sm text-secondary">
+            <div className="flex items-center gap-2 rounded-xl bg-secondary/10 px-4 py-3 text-sm font-semibold text-secondary">
               <Check className="h-4 w-4 shrink-0" /> 14-day free trial — no card required
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground shadow-glow transition-all hover:bg-primary-hover disabled:opacity-60"
+              className="btn-shine inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-primary-foreground shadow-glow transition-all hover:scale-[1.02] disabled:opacity-60"
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Create workspace <ArrowRight className="h-5 w-5" /></>}
             </button>

@@ -11,9 +11,9 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { mark: 28, text: 'text-lg' },
-  md: { mark: 36, text: 'text-xl' },
-  lg: { mark: 48, text: 'text-2xl' },
+  sm: { mark: 32, text: 'text-lg' },
+  md: { mark: 40, text: 'text-xl' },
+  lg: { mark: 52, text: 'text-2xl' },
 };
 
 export function Logo({ className, showWordmark = true, variant = 'default', size = 'md' }: LogoProps) {
@@ -23,31 +23,56 @@ export function Logo({ className, showWordmark = true, variant = 'default', size
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
       <motion.div
-        initial={{ rotate: -8, opacity: 0 }}
-        animate={{ rotate: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-        whileHover={{ rotate: 4, scale: 1.05 }}
-        className="relative grid place-items-center rounded-xl bg-gradient-to-br from-primary to-primary-hover shadow-glow"
+        initial={{ rotate: -6, opacity: 0, scale: 0.9 }}
+        animate={{ rotate: 0, opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 16 }}
+        whileHover={{ scale: 1.06 }}
+        className="relative shrink-0"
         style={{ width: dim.mark, height: dim.mark }}
       >
         <svg
-          width={dim.mark * 0.62}
-          height={dim.mark * 0.62}
-          viewBox="0 0 24 24"
+          width={dim.mark}
+          height={dim.mark}
+          viewBox="0 0 48 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden
         >
+          <defs>
+            <linearGradient id="navyGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="hsl(224 76% 22%)" />
+              <stop offset="100%" stopColor="hsl(224 76% 14%)" />
+            </linearGradient>
+            <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="hsl(43 80% 56%)" />
+              <stop offset="100%" stopColor="hsl(38 85% 45%)" />
+            </linearGradient>
+          </defs>
+          {/* Shield */}
           <path
-            d="M5 3.5h8.5a5 5 0 0 1 0 10H9v7H5V3.5Z"
+            d="M24 2 L44 9 V24 C44 34 35 42 24 46 C13 42 4 34 4 24 V9 Z"
+            fill="url(#navyGrad)"
+          />
+          {/* Gold shield outline */}
+          <path
+            d="M24 2 L44 9 V24 C44 34 35 42 24 46 C13 42 4 34 4 24 V9 Z"
+            fill="none"
+            stroke="url(#goldGrad)"
+            strokeWidth="1.5"
+            opacity="0.6"
+          />
+          {/* Interlocking P */}
+          <path
+            d="M17 14 H26 C30 14 33 16.5 33 21 C33 25.5 30 28 26 28 H21 V34 H17 Z M21 17.5 V24.5 H25.5 C27.5 24.5 29 23 29 21 C29 19 27.5 17.5 25.5 17.5 Z"
             fill="white"
           />
-          <circle cx="17.5" cy="17.5" r="3.2" fill="#F5B301" />
+          {/* Gold dot accent */}
+          <circle cx="32" cy="33" r="2.5" fill="url(#goldGrad)" />
         </svg>
       </motion.div>
       {showWordmark && (
         <span className={cn('font-display font-extrabold tracking-tight', dim.text, wordmarkColor)}>
-          Perk<span className="text-primary">Pass</span>
+          Perk<span className="text-secondary">Pass</span>
         </span>
       )}
     </div>

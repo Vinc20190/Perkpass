@@ -37,7 +37,7 @@ interface ActivityItem {
   created_at: string;
 }
 
-const PIE_COLORS = ['#F96324', '#0D9488', '#F5B301', '#3B82F6', '#8B5CF6', '#EC4899'];
+const PIE_COLORS = ['#1e3a5f', '#e8b84a', '#c89730', '#3b82f6', '#8b5cf6', '#ec4899'];
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -247,12 +247,12 @@ export default function DashboardPage() {
                       <AreaChart data={monthlyData}>
                         <defs>
                           <linearGradient id="gradAssign" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#F96324" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#F96324" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#1e3a5f" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#1e3a5f" stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="gradRedeem" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#0D9488" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#0D9488" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#e8b84a" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#e8b84a" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -261,8 +261,8 @@ export default function DashboardPage() {
                         <Tooltip
                           contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }}
                         />
-                        <Area type="monotone" dataKey="assignments" stroke="#F96324" strokeWidth={2} fill="url(#gradAssign)" name="Assigned" />
-                        <Area type="monotone" dataKey="redemptions" stroke="#0D9488" strokeWidth={2} fill="url(#gradRedeem)" name="Redeemed" />
+                        <Area type="monotone" dataKey="assignments" stroke="#1e3a5f" strokeWidth={2} fill="url(#gradAssign)" name="Assigned" />
+                        <Area type="monotone" dataKey="redemptions" stroke="#e8b84a" strokeWidth={2} fill="url(#gradRedeem)" name="Redeemed" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -317,7 +317,7 @@ export default function DashboardPage() {
                           <XAxis type="number" tick={{ fontSize: 12, fill: '#475569' }} allowDecimals={false} />
                           <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} width={100} />
                           <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                          <Bar dataKey="redeemed" fill="#F96324" radius={[0, 6, 6, 0]} />
+                          <Bar dataKey="redeemed" fill="#1e3a5f" radius={[0, 6, 6, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (

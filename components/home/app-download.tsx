@@ -11,8 +11,8 @@ export function AppDownloadSection() {
     <section className="py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary-hover px-6 py-16 text-center text-white shadow-glow sm:px-16">
-          <div className="pointer-events-none absolute inset-0 bg-kente opacity-20" />
-          <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
+          <div className="pointer-events-none absolute inset-0 bg-kente opacity-10" />
+          <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-secondary/20 blur-2xl" />
 
           <div className="relative mx-auto max-w-2xl">
             <motion.div

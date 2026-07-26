@@ -57,7 +57,7 @@ export function Header() {
             <Link
               key={link.key}
               href={link.href}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="nav-underline rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {t(link.key as never)}
             </Link>
@@ -72,7 +72,7 @@ export function Header() {
                   <Link
                     key={link.key}
                     href={link.href}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    className="nav-underline rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {t(link.key as never)}
                   </Link>
@@ -162,7 +162,7 @@ export function Header() {
               </button>
               <Link
                 href="/dashboard"
-                className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover sm:block"
+                className="btn-shine hidden rounded-lg bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-105 sm:block"
               >
                 {t('nav.dashboard')}
               </Link>
@@ -174,7 +174,7 @@ export function Header() {
               </Link>
               <Link
                 href="/signup"
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-glow transition-colors hover:bg-primary-hover"
+                className="btn-shine rounded-lg bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground shadow-glow-gold transition-all hover:scale-105"
               >
                 {t('nav.signup')}
               </Link>
@@ -222,7 +222,7 @@ export function Header() {
               <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
                 {user ? (
                   <>
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="rounded-xl bg-primary px-4 py-3 text-center font-semibold text-primary-foreground">
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="btn-shine rounded-xl bg-secondary px-4 py-3 text-center font-semibold text-secondary-foreground">
                       {t('nav.dashboard')}
                     </Link>
                     <button onClick={() => { signOut(); setMobileOpen(false); }} className="rounded-xl border border-border px-4 py-3 text-center font-semibold text-foreground">
@@ -234,7 +234,7 @@ export function Header() {
                     <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-xl border border-border px-4 py-3 text-center font-semibold text-foreground">
                       {t('nav.login')}
                     </Link>
-                    <Link href="/signup" onClick={() => setMobileOpen(false)} className="rounded-xl bg-primary px-4 py-3 text-center font-semibold text-primary-foreground">
+                    <Link href="/signup" onClick={() => setMobileOpen(false)} className="btn-shine rounded-xl bg-secondary px-4 py-3 text-center font-semibold text-secondary-foreground">
                       {t('nav.signup')}
                     </Link>
                   </>

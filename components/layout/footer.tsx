@@ -59,7 +59,7 @@ export function Footer() {
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Newsletter */}
-        <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-hover p-8 text-white sm:p-10">
+        <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-hover p-8 text-white shadow-glow sm:p-10">
           <div className="grid items-center gap-6 lg:grid-cols-2">
             <div>
               <h3 className="font-display text-2xl font-extrabold">Get exclusive offers first</h3>
@@ -91,7 +91,7 @@ export function Footer() {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                  className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-secondary hover:text-secondary"
                 >
                   <s.icon className="h-4 w-4" />
                 </a>
