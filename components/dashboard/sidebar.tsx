@@ -14,12 +14,12 @@ import { Logo } from '@/components/brand/logo';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/employees', label: 'Employees', icon: Users },
-  { href: '/dashboard/rewards', label: 'Rewards', icon: Gift },
-  { href: '/dashboard/assignments', label: 'Assignments', icon: QrCode },
-  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+  { href: '/corporate/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/corporate/dashboard/employees', label: 'Employees', icon: Users },
+  { href: '/corporate/dashboard/rewards', label: 'Rewards', icon: Gift },
+  { href: '/corporate/dashboard/assignments', label: 'Assignments', icon: QrCode },
+  { href: '/corporate/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/corporate/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 const ADMIN_ITEMS = [
@@ -44,7 +44,7 @@ export function DashboardSidebar() {
   const sidebarContent = (
     <>
       <div className="px-5 py-5">
-        <Link href="/dashboard">
+        <Link href="/corporate/dashboard">
           <Logo size="sm" />
         </Link>
       </div>

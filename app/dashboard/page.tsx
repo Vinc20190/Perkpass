@@ -3,148 +3,41 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import {
-  Users, Gift, QrCode, Wallet, TrendingUp, TrendingDown,
-  Activity, ArrowUpRight, Loader2, Building2,
+  MapPin, Star, Loader2, QrCode, Sparkles, TrendingUp,
+  ChevronRight, Heart, Bell, Settings, LogOut, Grid3X3,
+  Wallet, Gift, Clock,
 } from 'lucide-react';
-import {
-  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts';
 import { useAuth } from '@/lib/auth/context';
-import { useCompany } from '@/lib/company/context';
-import { supabase } from '@/lib/supabase/client';
-import { DashboardSidebar, DashboardTopBar } from '@/components/dashboard/sidebar';
-import { formatCents, formatDate } from '@/lib/utils';
-import type { Employee, RewardAssignment, RewardCatalogItem } from '@/lib/types';
+import { Logo } from '@/components/brand/logo';
+import { FEATURED_OFFERS, CATEGORIES } from '@/lib/data/home';
+import { formatCents } from '@/lib/utils';
 
-interface KpiData {
-  totalEmployees: number;
-  activeEmployees: number;
-  inactiveEmployees: number;
-  totalRewards: number;
-  assignedRewards: number;
-  redeemedRewards: number;
-  budgetUsedCents: number;
-  budgetRemainingCents: number;
-}
+const TIER_COLORS: Record<string, string> = {
+  premium: 'from-primary to-primary-hover',
+  family: 'from-teal-600 to-teal-800',
+  starter: 'from-slate-500 to-slate-700',
+  enterprise: 'from-amber-600 to-amber-800',
+};
 
-interface ActivityItem {
-  id: string;
-  action: string;
-  actor_id: string | null;
-  entity_type: string | null;
-  created_at: string;
-}
+const QUICK_LINKS = [
+  { label: 'My Offers', icon: Gift, href: '#offers' },
+  { label: 'Wallet', icon: Wallet, href: '#wallet' },
+  { label: 'History', icon: Clock, href: '#history' },
+  { label: 'Categories', icon: Grid3X3, href: '#categories' },
+];
 
-const PIE_COLORS = ['#1e3a5f', '#e8b84a', '#c89730', '#3b82f6', '#8b5cf6', '#ec4899'];
-
-export default function DashboardPage() {
-  const { user, loading: authLoading } = useAuth();
-  const { company, loading: companyLoading } = useCompany();
+export default function MemberDashboard() {
+  const { user, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
-  const [kpi, setKpi] = useState<KpiData | null>(null);
-  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
-  const [monthlyData, setMonthlyData] = useState<{ name: string; assignments: number; redemptions: number }[]>([]);
-  const [categoryData, setCategoryData] = useState<{ name: string; value: number }[]>([]);
-  const [topEmployees, setTopEmployees] = useState<{ name: string; redeemed: number }[]>([]);
-  const [dataLoading, setDataLoading] = useState(true);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
   }, [authLoading, user, router]);
 
-  useEffect(() => {
-    if (!company) return;
-    loadData();
-  }, [company]);
-
-  const loadData = async () => {
-    if (!company) return;
-    setDataLoading(true);
-
-    const [empRes, rewardRes, assignRes] = await Promise.all([
-      supabase.from('employees').select('*').eq('company_id', company.id),
-      supabase.from('rewards_catalog').select('*').eq('company_id', company.id),
-      supabase.from('reward_assignments').select('*').eq('company_id', company.id),
-    ]);
-
-    const employees = (empRes.data as Employee[]) ?? [];
-    const rewards = (rewardRes.data as RewardCatalogItem[]) ?? [];
-    const assignments = (assignRes.data as RewardAssignment[]) ?? [];
-
-    const active = employees.filter((e) => e.status === 'active').length;
-    const assigned = assignments.length;
-    const redeemed = assignments.filter((a) => a.status === 'used').length;
-    const budgetUsed = assignments.reduce((sum, a) => sum + a.value_cents, 0);
-    const annualBudget = company.annual_budget_cents;
-
-    setKpi({
-      totalEmployees: employees.length,
-      activeEmployees: active,
-      inactiveEmployees: employees.length - active,
-      totalRewards: rewards.length,
-      assignedRewards: assigned,
-      redeemedRewards: redeemed,
-      budgetUsedCents: budgetUsed,
-      budgetRemainingCents: Math.max(0, annualBudget - budgetUsed),
-    });
-
-    // Monthly chart data (last 6 months)
-    const now = new Date();
-    const months: { name: string; assignments: number; redemptions: number }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthName = d.toLocaleDateString('en-US', { month: 'short' });
-      const monthAssign = assignments.filter((a) => {
-        const ad = new Date(a.created_at);
-        return ad.getMonth() === d.getMonth() && ad.getFullYear() === d.getFullYear();
-      });
-      const monthRedeem = assignments.filter((a) => {
-        if (!a.redeemed_at) return false;
-        const rd = new Date(a.redeemed_at);
-        return rd.getMonth() === d.getMonth() && rd.getFullYear() === d.getFullYear();
-      });
-      months.push({ name: monthName, assignments: monthAssign.length, redemptions: monthRedeem.length });
-    }
-    setMonthlyData(months);
-
-    // Category distribution
-    const catMap: Record<string, number> = {};
-    rewards.forEach((r) => {
-      catMap[r.category] = (catMap[r.category] ?? 0) + 1;
-    });
-    setCategoryData(Object.entries(catMap).map(([name, value]) => ({ name, value })));
-
-    // Top employees by redemption
-    const empRedeemMap: Record<string, number> = {};
-    assignments.forEach((a) => {
-      if (a.status === 'used') {
-        empRedeemMap[a.employee_id] = (empRedeemMap[a.employee_id] ?? 0) + 1;
-      }
-    });
-    const top = Object.entries(empRedeemMap)
-      .map(([empId, redeemed]) => {
-        const emp = employees.find((e) => e.id === empId);
-        return { name: emp ? `${emp.first_name} ${emp.last_name}` : 'Unknown', redeemed };
-      })
-      .sort((a, b) => b.redeemed - a.redeemed)
-      .slice(0, 5);
-    setTopEmployees(top);
-
-    // Recent activity from audit logs
-    const { data: logs } = await supabase
-      .from('audit_logs')
-      .select('id, action, actor_id, entity_type, created_at')
-      .eq('company_id', company.id)
-      .order('created_at', { ascending: false })
-      .limit(8);
-    setRecentActivity((logs as ActivityItem[]) ?? []);
-
-    setDataLoading(false);
-  };
-
-  if (authLoading || companyLoading) {
+  if (authLoading) {
     return (
       <div className="grid min-h-screen place-items-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -154,205 +47,241 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
-  if (!company) {
-    router.push('/onboarding');
-    return (
-      <div className="grid min-h-screen place-items-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const kpiCards = [
-    {
-      label: 'Total Employees', value: kpi?.totalEmployees ?? 0,
-      sub: `${kpi?.activeEmployees ?? 0} active · ${kpi?.inactiveEmployees ?? 0} inactive`,
-      icon: Users, color: 'primary', trend: null,
-    },
-    {
-      label: 'Rewards Catalog', value: kpi?.totalRewards ?? 0,
-      sub: `${kpi?.assignedRewards ?? 0} assigned`,
-      icon: Gift, color: 'secondary', trend: null,
-    },
-    {
-      label: 'Redeemed', value: kpi?.redeemedRewards ?? 0,
-      sub: `${kpi?.assignedRewards ? Math.round((kpi.redeemedRewards / kpi.assignedRewards) * 100) : 0}% redemption rate`,
-      icon: QrCode, color: 'accent', trend: 'up' as const,
-    },
-    {
-      label: 'Budget Used', value: formatCents(kpi?.budgetUsedCents ?? 0, company.currency_code),
-      sub: `${formatCents(kpi?.budgetRemainingCents ?? 0, company.currency_code)} remaining`,
-      icon: Wallet, color: 'warning', trend: 'down' as const,
-    },
-  ];
-
-  const colorMap: Record<string, string> = {
-    primary: 'bg-primary/10 text-primary',
-    secondary: 'bg-secondary/10 text-secondary',
-    accent: 'bg-accent/10 text-accent',
-    warning: 'bg-warning/10 text-warning',
-  };
+  const fullName = user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? 'Member';
+  const firstName = fullName.split(' ')[0];
+  const initials = fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+  const memberSince = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const tier = (user.user_metadata?.plan ?? 'premium') as string;
+  const city = user.user_metadata?.city ?? 'Lagos';
+  const country = user.user_metadata?.country ?? 'Nigeria';
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardSidebar />
-      <div className="lg:pl-64">
-        <div className="mx-auto max-w-7xl px-4 pt-20 pb-10 sm:px-6 lg:px-8 lg:pt-10">
-          <DashboardTopBar
-            title="Dashboard"
-            subtitle={`Welcome back, ${user.user_metadata?.full_name ?? user.email}`}
-          />
+      {/* Top bar */}
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-card/80 px-4 backdrop-blur sm:px-6">
+        <Logo size="sm" />
+        <div className="flex items-center gap-2">
+          <button className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground hover:bg-muted" aria-label="Notifications">
+            <Bell className="h-5 w-5" />
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setUserMenuOpen((v) => !v)}
+              className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary"
+            >
+              {initials}
+            </button>
+            {userMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                <div className="absolute right-0 top-full z-50 mt-2 w-52 rounded-2xl border border-border bg-card p-1.5 shadow-xl">
+                  <Link href="/dashboard/settings" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted">
+                    <Settings className="h-4 w-4" /> Settings
+                  </Link>
+                  <button onClick={() => { signOut(); router.push('/'); }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10">
+                    <LogOut className="h-4 w-4" /> Log out
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
 
-          {dataLoading ? (
-            <div className="grid place-items-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
+        {/* Greeting */}
+        <div className="mb-6">
+          <h1 className="font-display text-2xl font-extrabold text-foreground">
+            Welcome back, {firstName}
+          </h1>
+          <p className="text-sm text-muted-foreground">Here are your latest offers and savings.</p>
+        </div>
+
+        {/* Membership card */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-br ${TIER_COLORS[tier] ?? TIER_COLORS.premium} p-6 text-white shadow-glow`}
+        >
+          <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute -bottom-10 right-12 h-32 w-32 rounded-full bg-white/5" />
+
+          <div className="flex items-start justify-between">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="h-3 w-3" />
+              {tier}
+            </span>
+            <QrCode className="h-6 w-6 text-white/70" />
+          </div>
+
+          <div className="mt-5">
+            <p className="font-display text-2xl font-extrabold">{fullName}</p>
+            <div className="mt-1 flex items-center gap-1 text-sm text-white/70">
+              <MapPin className="h-3.5 w-3.5" />
+              {city}, {country}
             </div>
-          ) : (
-            <div className="space-y-6">
-              {/* KPI cards */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {kpiCards.map((card, i) => (
-                  <motion.div
-                    key={card.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    className="rounded-2xl border border-border bg-card p-5 shadow-premium"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className={`grid h-11 w-11 place-items-center rounded-xl ${colorMap[card.color]}`}>
-                        <card.icon className="h-5 w-5" />
-                      </div>
-                      {card.trend && (
-                        <span className={`flex items-center gap-1 text-xs font-semibold ${card.trend === 'up' ? 'text-success' : 'text-destructive'}`}>
-                          {card.trend === 'up' ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-4 font-display text-2xl font-extrabold text-foreground">{card.value}</p>
-                    <p className="text-sm text-muted-foreground">{card.label}</p>
-                    <p className="mt-1 text-xs text-muted-foreground/80">{card.sub}</p>
-                  </motion.div>
-                ))}
-              </div>
+          </div>
 
-              {/* Charts */}
-              <div className="grid gap-6 lg:grid-cols-3">
-                {/* Monthly activity */}
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-premium lg:col-span-2">
-                  <h3 className="font-display text-lg font-bold text-foreground">Monthly Activity</h3>
-                  <p className="text-sm text-muted-foreground">Assignments vs redemptions over the last 6 months</p>
-                  <div className="mt-6 h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={monthlyData}>
-                        <defs>
-                          <linearGradient id="gradAssign" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#1e3a5f" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#1e3a5f" stopOpacity={0} />
-                          </linearGradient>
-                          <linearGradient id="gradRedeem" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#e8b84a" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#e8b84a" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                        <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#475569' }} />
-                        <YAxis tick={{ fontSize: 12, fill: '#475569' }} allowDecimals={false} />
-                        <Tooltip
-                          contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }}
-                        />
-                        <Area type="monotone" dataKey="assignments" stroke="#1e3a5f" strokeWidth={2} fill="url(#gradAssign)" name="Assigned" />
-                        <Area type="monotone" dataKey="redemptions" stroke="#e8b84a" strokeWidth={2} fill="url(#gradRedeem)" name="Redeemed" />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                {/* Category distribution */}
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-premium">
-                  <h3 className="font-display text-lg font-bold text-foreground">Reward Categories</h3>
-                  <p className="text-sm text-muted-foreground">Distribution by type</p>
-                  <div className="mt-6 h-48">
-                    {categoryData.length > 0 ? (
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={40}>
-                            {categoryData.map((_, idx) => (
-                              <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div className="grid h-full place-items-center text-sm text-muted-foreground">No rewards yet</div>
-                    )}
-                  </div>
-                  {categoryData.length > 0 && (
-                    <div className="mt-4 space-y-1.5">
-                      {categoryData.slice(0, 5).map((c, idx) => (
-                        <div key={c.name} className="flex items-center justify-between text-xs">
-                          <span className="flex items-center gap-2">
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ background: PIE_COLORS[idx % PIE_COLORS.length] }} />
-                            <span className="capitalize text-muted-foreground">{c.name}</span>
-                          </span>
-                          <span className="font-semibold text-foreground">{c.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Bottom row: top employees + recent activity */}
-              <div className="grid gap-6 lg:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-premium">
-                  <h3 className="font-display text-lg font-bold text-foreground">Top Employees</h3>
-                  <p className="text-sm text-muted-foreground">By rewards redeemed</p>
-                  <div className="mt-4 h-56">
-                    {topEmployees.length > 0 ? (
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={topEmployees} layout="vertical">
-                          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" horizontal={false} />
-                          <XAxis type="number" tick={{ fontSize: 12, fill: '#475569' }} allowDecimals={false} />
-                          <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} width={100} />
-                          <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E2E8F0', fontSize: 13 }} />
-                          <Bar dataKey="redeemed" fill="#1e3a5f" radius={[0, 6, 6, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    ) : (
-                      <div className="grid h-full place-items-center text-sm text-muted-foreground">No redemptions yet</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-premium">
-                  <h3 className="font-display text-lg font-bold text-foreground">Recent Activity</h3>
-                  <p className="text-sm text-muted-foreground">Latest events in your workspace</p>
-                  <div className="mt-4 space-y-3">
-                    {recentActivity.length > 0 ? (
-                      recentActivity.map((item) => (
-                        <div key={item.id} className="flex items-start gap-3 rounded-xl border border-border/60 p-3">
-                          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/10">
-                            <Activity className="h-4 w-4 text-primary" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-foreground">{item.action}</p>
-                            <p className="text-xs text-muted-foreground">{formatDate(item.created_at)}</p>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="grid place-items-center py-8 text-sm text-muted-foreground">
-                        <Building2 className="mb-2 h-8 w-8 text-muted-foreground/40" />
-                        No activity yet
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+          <div className="mt-5 flex items-end justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-white/60">Member since</p>
+              <p className="text-sm font-semibold">{memberSince}</p>
             </div>
-          )}
+            <div className="grid grid-cols-3 gap-0.5">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="h-1.5 w-1.5 rounded-full bg-white/40" />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Stats row */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="mb-6 grid grid-cols-3 gap-3"
+        >
+          {[
+            { label: 'Total saved', value: '$1,240', accent: 'text-success' },
+            { label: 'Offers used', value: '47', accent: 'text-primary' },
+            { label: 'This month', value: '$340', accent: 'text-secondary' },
+          ].map((s) => (
+            <div key={s.label} className="rounded-2xl border border-border bg-card p-3 text-center shadow-premium">
+              <p className={`font-display text-lg font-extrabold ${s.accent}`}>{s.value}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Quick links */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="mb-6 grid grid-cols-4 gap-3"
+        >
+          {QUICK_LINKS.map((q) => (
+            <Link
+              key={q.label}
+              href={q.href}
+              className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-3 text-center transition-colors hover:border-primary/30 hover:bg-primary/5"
+            >
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10">
+                <q.icon className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-xs font-semibold text-foreground">{q.label}</p>
+            </Link>
+          ))}
+        </motion.div>
+
+        {/* Featured offers */}
+        <motion.div
+          id="offers"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16 }}
+          className="mb-6"
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold text-foreground">Available Offers</h2>
+            <Link href="/categories" className="flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-80">
+              See all <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {FEATURED_OFFERS.slice(0, 4).map((offer, i) => (
+              <motion.div
+                key={offer.id}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.18 + i * 0.05 }}
+                className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-primary/20 hover:bg-muted/30"
+              >
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={offer.image} alt={offer.partner} className="h-full w-full object-cover" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="truncate text-sm font-bold text-foreground">{offer.partner}</p>
+                      <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{offer.title}</p>
+                    </div>
+                    <span className="shrink-0 rounded-lg bg-secondary/15 px-2 py-1 text-xs font-bold text-secondary">
+                      {offer.discount}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-secondary text-secondary" />
+                      {offer.rating}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {offer.city}
+                    </span>
+                    <span>{offer.category}</span>
+                  </div>
+                </div>
+                <button className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                  <Heart className="h-4 w-4" />
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Categories */}
+        <motion.div
+          id="categories"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.24 }}
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold text-foreground">Browse Categories</h2>
+            <Link href="/categories" className="flex items-center gap-1 text-sm font-semibold text-primary hover:opacity-80">
+              All <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {CATEGORIES.slice(0, 8).map((cat, i) => (
+              <motion.div
+                key={cat.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.26 + i * 0.03 }}
+                className="group relative overflow-hidden rounded-2xl"
+              >
+                <div className="aspect-square">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={cat.image} alt={cat.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 p-2">
+                  <p className="text-xs font-bold text-white">{cat.name}</p>
+                  <p className="text-[10px] text-white/70">{cat.count}+ offers</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Corporate portal link for company admins */}
+        <div className="mt-8 rounded-2xl border border-border bg-muted/30 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-bold text-foreground">Corporate Portal</p>
+              <p className="text-xs text-muted-foreground">Manage employee rewards & analytics</p>
+            </div>
+            <Link
+              href="/corporate/dashboard"
+              className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+            >
+              Open <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
