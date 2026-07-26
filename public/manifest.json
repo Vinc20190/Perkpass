@@ -1,0 +1,55 @@
+{
+  "name": "PerkPass — Africa's Lifestyle Membership",
+  "short_name": "PerkPass",
+  "description": "Unlock More. Spend Less. Exclusive offers across all 54 African countries.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#F96324",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "shopping", "food", "travel"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "Company dashboard"
+    },
+    {
+      "name": "Rewards",
+      "url": "/dashboard/rewards",
+      "description": "Manage rewards catalog"
+    }
+  ]
+}
