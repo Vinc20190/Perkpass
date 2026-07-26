@@ -74,3 +74,6 @@
     "zod": "^3.23.8"
   }
 }
+"scripts": {
+  "pages:build": "npx @cloudflare/next-on-pages"
+}
