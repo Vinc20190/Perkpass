@@ -19,11 +19,11 @@ interface NavLink {
 }
 
 const PRIMARY_LINKS: NavLink[] = [
-  { label: 'Home', href: '/' },
   { label: 'Categories', href: '/categories' },
   { label: 'Offers', href: '/pricing' },
   { label: 'My Perks', href: '/dashboard' },
   { label: 'Partners', href: '/partners' },
+  { label: 'Vendor', href: '/vendor' },
 ];
 
 const SECONDARY_LINKS: NavLink[] = [
