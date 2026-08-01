@@ -39,35 +39,35 @@ export function Logo({ className, showWordmark = true, variant = 'default', size
           aria-hidden
         >
           <defs>
-            <linearGradient id="navyGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="hsl(224 76% 22%)" />
-              <stop offset="100%" stopColor="hsl(224 76% 14%)" />
+            <linearGradient id="ppViolet" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#7B2CBF" />
+              <stop offset="100%" stopColor="#5A1E8F" />
             </linearGradient>
-            <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="hsl(43 80% 56%)" />
-              <stop offset="100%" stopColor="hsl(38 85% 45%)" />
+            <linearGradient id="ppNeon" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#C45BFF" />
+              <stop offset="100%" stopColor="#FF66C4" />
             </linearGradient>
           </defs>
           {/* Shield */}
           <path
             d="M24 2 L44 9 V24 C44 34 35 42 24 46 C13 42 4 34 4 24 V9 Z"
-            fill="url(#navyGrad)"
+            fill="url(#ppViolet)"
           />
-          {/* Gold shield outline */}
+          {/* Neon shield outline */}
           <path
             d="M24 2 L44 9 V24 C44 34 35 42 24 46 C13 42 4 34 4 24 V9 Z"
             fill="none"
-            stroke="url(#goldGrad)"
+            stroke="url(#ppNeon)"
             strokeWidth="1.5"
-            opacity="0.6"
+            opacity="0.7"
           />
           {/* Interlocking P */}
           <path
             d="M17 14 H26 C30 14 33 16.5 33 21 C33 25.5 30 28 26 28 H21 V34 H17 Z M21 17.5 V24.5 H25.5 C27.5 24.5 29 23 29 21 C29 19 27.5 17.5 25.5 17.5 Z"
             fill="white"
           />
-          {/* Gold dot accent */}
-          <circle cx="32" cy="33" r="2.5" fill="url(#goldGrad)" />
+          {/* Pink dot accent */}
+          <circle cx="32" cy="33" r="2.5" fill="#FF66C4" />
         </svg>
       </motion.div>
       {showWordmark && (
