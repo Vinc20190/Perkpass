@@ -144,7 +144,7 @@ export default function AssignmentsPage() {
           body: message || `You've received a ${reward.name} reward worth ${formatCents(reward.value_cents, reward.currency_code)}.`,
           metadata: { assignment_id: a.id, reward_id: reward.id },
         } : null;
-      }).filter(Boolean);
+      }).filter((n): n is NonNullable<typeof n> => n !== null);
 
       if (notifRows.length > 0) {
         await supabase.from('notifications').insert(notifRows);

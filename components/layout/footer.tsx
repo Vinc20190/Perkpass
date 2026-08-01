@@ -56,10 +56,10 @@ export function Footer() {
   const { t } = useI18n();
 
   return (
-    <footer className="border-t border-border bg-card">
+    <footer className="border-t border-border bg-lavender">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Newsletter */}
-        <div className="rounded-2xl bg-gradient-to-br from-primary to-primary-hover p-8 text-white shadow-glow sm:p-10">
+        <div className="glass-card overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-hover to-secondary p-8 text-white shadow-glow sm:p-10">
           <div className="grid items-center gap-6 lg:grid-cols-2">
             <div>
               <h3 className="font-display text-2xl font-extrabold">Get exclusive offers first</h3>
@@ -69,9 +69,9 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="your@email.com"
-                className="h-12 flex-1 rounded-xl border-0 bg-white/15 px-4 text-white placeholder:text-white/60 backdrop-blur focus:outline-none focus:ring-2 focus:ring-white/40"
+                className="h-12 flex-1 rounded-xl border-0 bg-white/20 px-4 text-white placeholder:text-white/60 backdrop-blur focus:outline-none focus:ring-2 focus:ring-white/40"
               />
-              <button type="submit" className="inline-flex h-12 items-center gap-2 rounded-xl bg-foreground px-5 font-semibold text-white transition-transform hover:scale-105">
+              <button type="submit" className="btn-shine inline-flex h-12 items-center gap-2 rounded-xl bg-white px-5 font-bold text-primary transition-transform hover:scale-105">
                 <Send className="h-4 w-4" /> Subscribe
               </button>
             </form>
@@ -91,7 +91,7 @@ export function Footer() {
                   key={s.label}
                   href={s.href}
                   aria-label={s.label}
-                  className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-secondary hover:text-secondary"
+                  className="grid h-9 w-9 place-items-center rounded-xl bg-white/60 text-primary transition-all hover:scale-110 hover:bg-white"
                 >
                   <s.icon className="h-4 w-4" />
                 </a>
@@ -121,7 +121,7 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-success" /> All systems operational
+              <span className="h-2 w-2 rounded-full bg-success shadow-[0_0_8px_hsl(142_71%_45%)]" /> All systems operational
             </span>
           </div>
         </div>

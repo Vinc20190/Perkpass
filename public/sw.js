@@ -1,4 +1,4 @@
-const CACHE_NAME = 'perkpass-v2';
+const CACHE_NAME = 'perkpass-v3';
 const STATIC_ASSETS = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg'];
 
 self.addEventListener('install', (event) => {

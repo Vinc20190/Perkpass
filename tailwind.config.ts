@@ -104,6 +104,15 @@ const config: Config = {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-50%)' },
         },
+        'gradient-shift': {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+        'scroll-indicator': {
+          '0%, 100%': { transform: 'translateY(0)', opacity: '1' },
+          '50%': { transform: 'translateY(8px)', opacity: '0.5' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -115,6 +124,8 @@ const config: Config = {
         float: 'float 6s ease-in-out infinite',
         'pulse-glow': 'pulse-glow 2s infinite',
         marquee: 'marquee 30s linear infinite',
+        'gradient-shift': 'gradient-shift 6s ease infinite',
+        'scroll-indicator': 'scroll-indicator 2s ease-in-out infinite',
       },
     },
   },
