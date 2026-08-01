@@ -1,5 +1,14 @@
-const CACHE_NAME = 'perkpass-v3';
-const STATIC_ASSETS = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg'];
+const CACHE_NAME = 'perkpass-v4';
+const STATIC_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon.svg',
+  '/vendor',
+  '/categories',
+  '/pricing',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -39,7 +48,7 @@ self.addEventListener('fetch', (event) => {
     caches.match(request).then((cached) => {
       if (cached) return cached;
       return fetch(request).then((res) => {
-        if (res.ok && url.pathname.startsWith('/_next/static/')) {
+        if (res.ok && (url.pathname.startsWith('/_next/static/') || url.pathname.match(/\.(png|jpg|jpeg|svg|ico|webp)$/))) {
           const copy = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }

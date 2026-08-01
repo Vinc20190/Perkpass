@@ -124,3 +124,59 @@ export interface AppUser {
   fullName?: string;
   avatarUrl?: string;
 }
+
+// ============================================================
+// Vendor System Types
+// ============================================================
+
+export type VendorApplicationStatus = 'pending' | 'approved' | 'rejected';
+
+export interface VendorApplication {
+  id: string;
+  user_id: string;
+  business_name: string;
+  contact_name: string;
+  email: string;
+  phone: string;
+  business_type: string;
+  country_id: string | null;
+  city: string;
+  address: string | null;
+  website: string | null;
+  description: string | null;
+  logo_url: string | null;
+  license_url: string | null;
+  gallery_urls: string[] | null;
+  status: VendorApplicationStatus;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  rejection_reason: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type VendorOfferStatus = 'draft' | 'published' | 'archived';
+export type VendorOfferType = 'discount' | 'bogo' | 'free';
+
+export interface VendorOffer {
+  id: string;
+  vendor_id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  offer_type: VendorOfferType;
+  discount_value: string;
+  image_url: string | null;
+  terms_conditions: string | null;
+  original_price_cents: number;
+  currency_code: string;
+  city: string;
+  country_id: string | null;
+  expires_at: string | null;
+  status: VendorOfferStatus;
+  views_count: number;
+  redemptions_count: number;
+  created_at: string;
+  updated_at: string;
+}

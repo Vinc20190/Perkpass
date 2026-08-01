@@ -23,6 +23,8 @@ import {
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
 import { BadgeGrid, PointsDisplay, LevelBadge, type BadgeLevel } from '@/components/ui/gamification';
 import { PerkCard, PerkCardGrid, type PerkOffer } from '@/components/ui/perk-card';
+import { Store, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { SectionHeading, PageHeader, StatCard, EmptyState } from '@/components/ui/primitives';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -475,6 +477,67 @@ export default function DesignSystemPage() {
             </div>
             <div className="glass-card rounded-2xl p-8 text-center">
               <p className="text-sm font-bold">Glass Card</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Vendor System Showcase */}
+        <section className="mt-16">
+          <SectionHeading eyebrow="Module" title="Become a Vendor System" subtitle="Complete partner onboarding, dashboard, and offer management flow." />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card className="glass-card p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Store className="h-5 w-5 text-primary" /> Flow 5: Partner → Become a Vendor
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1 px-0">
+                    {['Header → Become a Vendor button', 'Vendor info page', 'Multi-step registration form', 'Upload documents (license, logo)', 'Submit application', 'Vendor Status (Pending / Approved / Rejected)', 'Approved → Partner Dashboard', 'Create & publish offers', 'Track analytics'].map((step, i) => (
+                  <div key={i} className="flex items-center gap-3 py-2">
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary-gradient text-xs font-bold text-white">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm font-medium">{step}</span>
+                    {i < 8 && <ChevronRight className="ml-auto h-4 w-4 text-muted-foreground" />}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+              <Card className="glass-card p-5">
+                <h3 className="mb-3 font-display text-sm font-bold">Vendor Components</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-primary-gradient text-white">VendorButton</Badge>
+                  <Badge variant="secondary">VendorForm</Badge>
+                  <Badge variant="outline">VendorStatusCard</Badge>
+                  <Badge className="bg-accent-gradient text-white">OfferEditor</Badge>
+                  <Badge variant="outline">VendorAnalyticsTable</Badge>
+                  <Badge className="bg-success/10 text-success">VendorDashboardLayout</Badge>
+                </div>
+              </Card>
+              <Card className="glass-card p-5">
+                <h3 className="mb-3 font-display text-sm font-bold">Try It Live</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Link href="/vendor"><Button size="sm" className="btn-shine bg-primary-gradient"><Store className="mr-1.5 h-4 w-4" /> Vendor Info</Button></Link>
+                  <Link href="/vendor/register"><Button size="sm" variant="outline">Register</Button></Link>
+                  <Link href="/vendor/status"><Button size="sm" variant="outline">Status</Button></Link>
+                  <Link href="/vendor/dashboard"><Button size="sm" variant="outline">Dashboard</Button></Link>
+                </div>
+              </Card>
+              <Card className="glass-card p-5">
+                <h3 className="mb-2 font-display text-sm font-bold">Database Tables</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                    <span className="font-mono text-xs">vendor_applications</span>
+                    <Badge variant="outline" className="text-xs">RLS enabled</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs">vendor_offers</span>
+                    <Badge variant="outline" className="text-xs">RLS enabled</Badge>
+                  </div>
+                </div>
+              </Card>
             </div>
           </div>
         </section>

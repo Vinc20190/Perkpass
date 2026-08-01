@@ -3,9 +3,10 @@
   "short_name": "PerkPass",
   "description": "Unlock More. Spend Less. Exclusive offers across all 54 African countries.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#FAFAFA",
-  "theme_color": "#F96324",
+  "background_color": "#F7E9FF",
+  "theme_color": "#7B2CBF",
   "orientation": "portrait-primary",
   "categories": ["lifestyle", "shopping", "food", "travel"],
   "icons": [
@@ -44,12 +45,22 @@
     {
       "name": "Dashboard",
       "url": "/dashboard",
-      "description": "Company dashboard"
+      "description": "Your member dashboard"
     },
     {
-      "name": "Rewards",
-      "url": "/dashboard/rewards",
-      "description": "Manage rewards catalog"
+      "name": "Browse Offers",
+      "url": "/pricing",
+      "description": "Explore premium offers"
+    },
+    {
+      "name": "Become a Vendor",
+      "url": "/vendor",
+      "description": "Partner with PerkPass"
+    },
+    {
+      "name": "Categories",
+      "url": "/categories",
+      "description": "Browse by category"
     }
   ]
 }

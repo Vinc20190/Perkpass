@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronDown, Globe, Sun, Moon, Bell, Search } from 'lucide-react';
+import { Menu, X, ChevronDown, Globe, Sun, Moon, Bell, Search, Store } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -236,6 +236,12 @@ export function Header() {
           {/* Auth */}
           {user ? (
             <div className="flex items-center gap-1.5">
+              <Link
+                href="/vendor"
+                className="hidden items-center gap-1.5 rounded-xl border border-primary/30 px-3 py-2 text-sm font-bold text-primary transition-all hover:bg-primary/10 md:flex"
+              >
+                <Store className="h-4 w-4" /> Become a Vendor
+              </Link>
               <button
                 className="relative grid h-9 w-9 place-items-center rounded-xl text-foreground/70 transition-colors hover:bg-primary/10 hover:text-primary"
                 aria-label="Notifications"
@@ -252,6 +258,12 @@ export function Header() {
             </div>
           ) : (
             <div className="hidden items-center gap-1.5 sm:flex">
+              <Link
+                href="/vendor"
+                className="hidden items-center gap-1.5 rounded-xl border border-primary/30 px-3 py-2 text-sm font-bold text-primary transition-all hover:bg-primary/10 md:flex"
+              >
+                <Store className="h-4 w-4" /> Become a Vendor
+              </Link>
               <Link
                 href="/login"
                 className="rounded-xl px-3.5 py-2 text-sm font-bold text-foreground transition-colors hover:bg-primary/10 hover:text-primary"
@@ -320,6 +332,13 @@ export function Header() {
                   </Link>
                 ))}
                 <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+                  <Link
+                    href="/vendor"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-4 py-3 text-center font-bold text-primary transition-colors hover:bg-primary/10"
+                  >
+                    <Store className="h-4 w-4" /> Become a Vendor
+                  </Link>
                   {user ? (
                     <Link
                       href="/dashboard"
