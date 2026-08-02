@@ -1,0 +1,5 @@
+name = "perkpass"
+
+compatibility_date = "2026-08-02"
+
+compatibility_flags = ["nodejs_compat"]
