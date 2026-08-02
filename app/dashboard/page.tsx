@@ -10,6 +10,7 @@ import {
   Wallet, Gift, Clock,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/context';
+import { useCompany } from '@/lib/company/context';
 import { Logo } from '@/components/brand/logo';
 import { FEATURED_OFFERS, CATEGORIES } from '@/lib/data/home';
 import { formatCents } from '@/lib/utils';
@@ -30,6 +31,7 @@ const QUICK_LINKS = [
 
 export default function MemberDashboard() {
   const { user, loading: authLoading, signOut } = useAuth();
+  const { company, isSuperAdmin } = useCompany();
   const router = useRouter();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -268,21 +270,41 @@ export default function MemberDashboard() {
           </div>
         </motion.div>
 
-        {/* Corporate portal link for company admins */}
+        {/* Portal links for company members and super admins */}
+        {(company || isSuperAdmin) && (
         <div className="mt-8 rounded-2xl border border-border bg-muted/30 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-bold text-foreground">Corporate Portal</p>
-              <p className="text-xs text-muted-foreground">Manage employee rewards & analytics</p>
-            </div>
-            <Link
-              href="/corporate/dashboard"
-              className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
-            >
-              Open <ChevronRight className="h-4 w-4" />
-            </Link>
+          <div className="flex items-center gap-4">
+            {company && (
+              <div className="flex flex-1 items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold text-foreground">Corporate Portal</p>
+                  <p className="text-xs text-muted-foreground">Manage employee rewards & analytics</p>
+                </div>
+                <Link
+                  href="/corporate/dashboard"
+                  className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+                >
+                  Open <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
+            {isSuperAdmin && (
+              <div className="flex flex-1 items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold text-foreground">Super Admin</p>
+                  <p className="text-xs text-muted-foreground">Manage vendors, campaigns & admins</p>
+                </div>
+                <Link
+                  href="/super-admin"
+                  className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
+                >
+                  Open <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

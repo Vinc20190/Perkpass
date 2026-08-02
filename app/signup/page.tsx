@@ -49,7 +49,7 @@ export default function SignupPage() {
       setError(error);
     } else {
       setSuccess(true);
-      setTimeout(() => router.push('/dashboard'), 1500);
+      setTimeout(() => router.push('/onboarding'), 1500);
     }
   };
 

@@ -26,6 +26,10 @@ export default function CorporateDashboardPage() {
   }, [authLoading, user, router]);
 
   useEffect(() => {
+    if (!authLoading && !companyLoading && user && !company) router.push('/onboarding');
+  }, [authLoading, companyLoading, user, company, router]);
+
+  useEffect(() => {
     if (!company) return;
     const loadStats = async () => {
       setLoading(true);
@@ -54,7 +58,8 @@ export default function CorporateDashboardPage() {
     );
   }
   if (!user) return null;
-  if (!company) { router.push('/onboarding'); return null; }
+  if (!companyLoading && !company) return null;
+  if (!company) return null;
 
   const kpis = [
     { label: 'Total Employees', value: stats.employees.toString(), icon: Users, accent: 'text-primary', bg: 'bg-primary/10' },

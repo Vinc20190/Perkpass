@@ -11,6 +11,7 @@ import { LOCALES } from '@/lib/i18n/locales';
 import { CURRENCIES } from '@/lib/i18n/currencies';
 import { Logo } from '@/components/brand/logo';
 import { useAuth } from '@/lib/auth/context';
+import { useCompany } from '@/lib/company/context';
 
 interface NavLink {
   label: string;
@@ -38,6 +39,7 @@ export function Header() {
   const { t, locale, setLocale, currency, setCurrency } = useI18n();
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
+  const { company, isSuperAdmin } = useCompany();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -130,7 +132,11 @@ export function Header() {
                   className="glass-card absolute left-0 top-full mt-2 w-56 rounded-2xl p-2"
                   role="menu"
                 >
-                  {SECONDARY_LINKS.map((link) => (
+                  {SECONDARY_LINKS.filter((link) => {
+                if (link.href === '/super-admin') return isSuperAdmin;
+                if (link.href === '/corporate/dashboard') return !!company;
+                return true;
+              }).map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -316,7 +322,11 @@ export function Header() {
                 </button>
               </div>
               <div className="flex flex-col gap-1 px-4 py-4">
-                {[...PRIMARY_LINKS, ...SECONDARY_LINKS].map((link) => (
+                {[...PRIMARY_LINKS, ...SECONDARY_LINKS.filter((link) => {
+                  if (link.href === '/super-admin') return isSuperAdmin;
+                  if (link.href === '/corporate/dashboard') return !!company;
+                  return true;
+                })].map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
