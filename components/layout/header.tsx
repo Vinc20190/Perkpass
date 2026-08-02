@@ -23,7 +23,6 @@ const PRIMARY_LINKS: NavLink[] = [
   { label: 'Offers', href: '/pricing' },
   { label: 'My Perks', href: '/dashboard' },
   { label: 'Partners', href: '/partners' },
-  { label: 'Vendor', href: '/vendor' },
 ];
 
 const SECONDARY_LINKS: NavLink[] = [

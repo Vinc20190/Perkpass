@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UploadCloud, Check, ChevronLeft, ChevronRight, AlertCircle, Store } from 'lucide-react';
+import { UploadCloud, Check, ChevronLeft, ChevronRight, AlertCircle, Store, Loader2, FileText, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 
 const BUSINESS_TYPES = [
@@ -253,6 +254,7 @@ export function VendorForm({ onSubmit, initialData }: VendorFormProps) {
                   accept="image/*,.pdf"
                   label="Upload Commercial License"
                   error={errors.license_url}
+                  folder="licenses"
                 />
               </div>
               <div className="space-y-2">
@@ -262,14 +264,15 @@ export function VendorForm({ onSubmit, initialData }: VendorFormProps) {
                   onChange={(v) => update('logo_url', v)}
                   accept="image/*"
                   label="Upload Logo (PNG/SVG)"
+                  folder="logos"
                 />
               </div>
               <div className="space-y-2">
                 <Label>Gallery Images (optional)</Label>
-                <div className="rounded-xl border-2 border-dashed border-border p-6 text-center">
-                  <UploadCloud className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">Drag & drop or click to upload up to 5 images</p>
-                </div>
+                <GalleryUpload
+                  urls={data.gallery_urls}
+                  onChange={(urls) => setData((d) => ({ ...d, gallery_urls: urls }))}
+                />
               </div>
             </div>
           )}
@@ -327,25 +330,54 @@ function FieldError({ msg }: { msg: string }) {
 }
 
 function FileUploadField({
-  value, onChange, accept, label, error,
+  value, onChange, accept, label, error, folder,
 }: {
-  value: string; onChange: (v: string) => void; accept: string; label: string; error?: string;
+  value: string; onChange: (v: string) => void; accept: string; label: string; error?: string; folder: string;
 }) {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('vendor-documents')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from('vendor-documents').getPublicUrl(fileName);
+      onChange(urlData.publicUrl);
+    } catch {
+      onChange(URL.createObjectURL(file));
+    }
+    setUploading(false);
+  };
+
   return (
     <div>
-      <div className={cn(
-        'cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all hover:border-primary',
-        value ? 'border-success/50 bg-success/5' : 'border-border'
+      <label className={cn(
+        'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition-all hover:border-primary',
+        value ? 'border-success/50 bg-success/5' : 'border-border',
+        uploading && 'border-primary/50 bg-primary/5'
       )}>
-        {value ? (
+        {uploading ? (
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-7 w-7 animate-spin text-primary" />
+            <p className="text-sm font-semibold text-primary">Uploading...</p>
+          </div>
+        ) : value ? (
           <div className="flex flex-col items-center gap-2">
             <Check className="h-6 w-6 text-success" />
             <p className="text-sm font-semibold text-success">File uploaded</p>
+            <p className="text-xs text-muted-foreground">Click to replace</p>
           </div>
         ) : (
           <>
-            <UploadCloud className="mx-auto h-8 w-8 text-muted-foreground" />
+            <UploadCloud className="h-8 w-8 text-muted-foreground" />
             <p className="mt-2 text-sm text-muted-foreground">{label}</p>
+            <p className="mt-1 text-xs text-muted-foreground">PDF, PNG, JPG up to 5MB</p>
           </>
         )}
         <input
@@ -354,11 +386,76 @@ function FileUploadField({
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) onChange(URL.createObjectURL(file));
+            if (file) handleFile(file);
           }}
         />
-      </div>
+      </label>
       {error && <FieldError msg={error} />}
+    </div>
+  );
+}
+
+function GalleryUpload({ urls, onChange }: { urls: string[]; onChange: (urls: string[]) => void }) {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (file: File) => {
+    if (urls.length >= 5) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const fileName = `gallery/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('vendor-documents')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from('vendor-documents').getPublicUrl(fileName);
+      onChange([...urls, urlData.publicUrl]);
+    } catch {
+      onChange([...urls, URL.createObjectURL(file)]);
+    }
+    setUploading(false);
+  };
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-3">
+        {urls.map((url, i) => (
+          <div key={i} className="relative h-20 w-20 overflow-hidden rounded-xl border border-border">
+            <img src={url} alt={`Gallery ${i + 1}`} className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={() => onChange(urls.filter((_, idx) => idx !== i))}
+              className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-destructive/90 text-white"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        ))}
+        {urls.length < 5 && (
+          <label className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border transition-all hover:border-primary">
+            {uploading ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : (
+              <>
+                <UploadCloud className="h-5 w-5 text-muted-foreground" />
+                <span className="mt-0.5 text-[10px] font-medium text-muted-foreground">Add</span>
+              </>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFile(file);
+              }}
+            />
+          </label>
+        )}
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">Up to 5 images. PNG, JPG up to 5MB each.</p>
     </div>
   );
 }

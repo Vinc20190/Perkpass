@@ -180,3 +180,49 @@ export interface VendorOffer {
   created_at: string;
   updated_at: string;
 }
+
+// ============================================================
+// Campaign System Types
+// ============================================================
+
+export type CampaignStatus = 'pending' | 'active' | 'rejected' | 'paused' | 'completed' | 'refunded';
+export type CampaignType = 'flash' | 'homepage_banner' | 'search_banner' | 'category_banner';
+
+export interface Campaign {
+  id: string;
+  vendor_id: string | null;
+  user_id: string;
+  title: string;
+  description: string | null;
+  offer_id: string | null;
+  campaign_type: CampaignType;
+  placement: string;
+  banner_url: string | null;
+  budget_cents: number;
+  spent_cents: number;
+  cpm_cents: number;
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  revenue_cents: number;
+  status: CampaignStatus;
+  rejection_reason: string | null;
+  boosted: boolean;
+  boost_multiplier: number;
+  starts_at: string | null;
+  ends_at: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BannerPlacement {
+  id: string;
+  slot_key: string;
+  display_name: string;
+  description: string | null;
+  current_campaign_id: string | null;
+  is_active: boolean;
+  created_at: string;
+}
