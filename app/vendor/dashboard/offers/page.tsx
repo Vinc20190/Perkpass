@@ -107,7 +107,7 @@ export default function VendorOffersPage() {
                   <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {offer.views_count}</span>
                   <span className="flex items-center gap-1"><Ticket className="h-3.5 w-3.5" /> {offer.redemptions_count}</span>
                 </div>
-                <Link href={`/vendor/dashboard/offers/${offer.id}`} className="mt-3 block">
+                <Link href={`/vendor/dashboard/offers/edit?id=${offer.id}`} className="mt-3 block">
                   <Button variant="outline" size="sm" className="w-full">
                     Edit Offer <ArrowRight className="ml-1 h-3.5 w-3.5" />
                   </Button>

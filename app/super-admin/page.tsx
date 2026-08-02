@@ -7,7 +7,7 @@ import {
   Shield, Loader2, Building2, DollarSign, Users, Gift,
   Search, MoreVertical, Edit2, Ban, CheckCircle2, XCircle,
   X, AlertCircle, Store, Megaphone, Image as ImageIcon, TrendingUp,
-  Eye, MousePointerClick, Zap, RefreshCw,
+  Eye, MousePointerClick, Zap, RefreshCw, UserPlus, Trash2, ShieldCheck,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -20,7 +20,15 @@ import { DashboardSidebar, DashboardTopBar } from '@/components/dashboard/sideba
 import { formatCents, formatDate, cn } from '@/lib/utils';
 import type { VendorApplication, Campaign, BannerPlacement } from '@/lib/types';
 
-type Tab = 'overview' | 'vendors' | 'campaigns' | 'banners';
+type Tab = 'overview' | 'vendors' | 'campaigns' | 'banners' | 'admins';
+
+interface SuperAdminRow {
+  id: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+  created_at: string;
+}
 
 interface CompanyStat {
   id: string; name: string; slug: string; plan: string;
@@ -47,6 +55,7 @@ const TABS: { id: Tab; label: string; icon: typeof Shield }[] = [
   { id: 'vendors', label: 'Vendor Review', icon: Store },
   { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
   { id: 'banners', label: 'Banner Placements', icon: ImageIcon },
+  { id: 'admins', label: 'Admins', icon: ShieldCheck },
 ];
 
 export default function SuperAdminPage() {
@@ -71,6 +80,10 @@ export default function SuperAdminPage() {
 
   // Banners
   const [banners, setBanners] = useState<BannerPlacement[]>([]);
+
+  // Admins
+  const [admins, setAdmins] = useState<SuperAdminRow[]>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
@@ -107,11 +120,16 @@ export default function SuperAdminPage() {
     setBanners((data ?? []) as BannerPlacement[]);
   }, []);
 
+  const loadAdmins = useCallback(async () => {
+    const { data } = await supabase.from('super_admins').select('*').order('created_at');
+    setAdmins((data ?? []) as SuperAdminRow[]);
+  }, []);
+
   useEffect(() => {
     if (authLoading || companyLoading) return;
     if (!isSuperAdmin) { router.push('/dashboard'); return; }
-    loadData(); loadVendors(); loadCampaigns(); loadBanners();
-  }, [authLoading, companyLoading, isSuperAdmin, loadData, loadVendors, loadCampaigns, loadBanners, router]);
+    loadData(); loadVendors(); loadCampaigns(); loadBanners(); loadAdmins();
+  }, [authLoading, companyLoading, isSuperAdmin, loadData, loadVendors, loadCampaigns, loadBanners, loadAdmins, router]);
 
   // Vendor actions
   const reviewVendor = async (app: VendorApplication, status: 'approved' | 'rejected') => {
@@ -151,6 +169,28 @@ export default function SuperAdminPage() {
     if (error) setActionMsg(error.message);
     else { setActionMsg(`${c.title} ${!c.boosted ? 'boosted 2x' : 'boost removed'}`); loadCampaigns(); }
     setMenuOpen(null);
+  };
+
+  // Admin actions
+  const addAdmin = async () => {
+    const email = newAdminEmail.trim().toLowerCase();
+    if (!email || !email.includes('@')) { setActionMsg('Please enter a valid email'); return; }
+    const { error } = await supabase.from('super_admins').insert({ email, role: 'super_admin', is_active: true });
+    if (error) setActionMsg(error.message);
+    else { setActionMsg(`Admin added: ${email}`); setNewAdminEmail(''); loadAdmins(); }
+  };
+
+  const removeAdmin = async (admin: SuperAdminRow) => {
+    if (admin.email === user?.email) { setActionMsg('You cannot remove yourself'); return; }
+    const { error } = await supabase.from('super_admins').delete().eq('id', admin.id);
+    if (error) setActionMsg(error.message);
+    else { setActionMsg(`Admin removed: ${admin.email}`); loadAdmins(); }
+  };
+
+  const toggleAdmin = async (admin: SuperAdminRow) => {
+    const { error } = await supabase.from('super_admins').update({ is_active: !admin.is_active }).eq('id', admin.id);
+    if (error) setActionMsg(error.message);
+    else { setActionMsg(`${admin.email} ${!admin.is_active ? 'activated' : 'deactivated'}`); loadAdmins(); }
   };
 
   // Company actions
@@ -507,6 +547,84 @@ export default function SuperAdminPage() {
                           </div>
                         );
                       })}
+                    </div>
+                  </div>
+                )}
+
+                {/* ============ ADMINS TAB ============ */}
+                {tab === 'admins' && (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-border bg-card p-6 shadow-premium">
+                      <h3 className="font-display text-lg font-bold">Manage Super Admins</h3>
+                      <p className="text-sm text-muted-foreground">Add or remove super admin access. Only super admins can access this dashboard.</p>
+                    </div>
+
+                    {/* Add admin */}
+                    <div className="rounded-2xl border border-border bg-card p-5 shadow-premium">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                        <div className="flex-1">
+                          <label className="mb-1.5 block text-sm font-semibold">Add new super admin</label>
+                          <div className="relative">
+                            <UserPlus className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <input
+                              type="email"
+                              placeholder="admin@example.com"
+                              value={newAdminEmail}
+                              onChange={(e) => setNewAdminEmail(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') addAdmin(); }}
+                              className="h-12 w-full rounded-xl border border-input bg-card pl-10 pr-4 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={addAdmin}
+                          className="btn-shine inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-gradient px-5 font-semibold text-white shadow-glow transition-all hover:scale-[1.02]"
+                        >
+                          <UserPlus className="h-5 w-5" /> Add Admin
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Admin list */}
+                    <div className="space-y-3">
+                      {admins.map((admin) => (
+                        <div key={admin.id} className="flex items-center justify-between rounded-2xl border border-border bg-card p-4 shadow-premium">
+                          <div className="flex items-center gap-4">
+                            <div className={cn('grid h-11 w-11 place-items-center rounded-full text-sm font-bold', admin.is_active ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground')}>
+                              {admin.email.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-semibold">{admin.email}</p>
+                              <p className="text-xs text-muted-foreground">Added {formatDate(admin.created_at)}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold', admin.is_active ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground')}>
+                              <span className={cn('h-1.5 w-1.5 rounded-full', admin.is_active ? 'bg-success' : 'bg-muted-foreground')} /> {admin.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                            {admin.email === user?.email ? (
+                              <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">You</span>
+                            ) : (
+                              <div className="flex gap-1.5">
+                                <button
+                                  onClick={() => toggleAdmin(admin)}
+                                  className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition-all hover:bg-muted hover:text-foreground"
+                                  title={admin.is_active ? 'Deactivate' : 'Activate'}
+                                >
+                                  {admin.is_active ? <Ban className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+                                </button>
+                                <button
+                                  onClick={() => removeAdmin(admin)}
+                                  className="grid h-8 w-8 place-items-center rounded-lg text-destructive transition-all hover:bg-destructive/10"
+                                  title="Remove admin"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

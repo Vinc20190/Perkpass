@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { VendorDashboardLayout } from '@/components/vendor/dashboard-layout';
 import { OfferEditor, type OfferEditorData } from '@/components/ui/offer-editor';
@@ -9,17 +10,17 @@ import { useAuth } from '@/lib/auth/context';
 import { supabase } from '@/lib/supabase/client';
 import type { VendorOffer } from '@/lib/types';
 
-export default function EditOfferPage() {
-  const params = useParams();
+function EditOfferContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
-  const offerId = params.id as string;
+  const offerId = searchParams.get('id');
   const [offer, setOffer] = useState<VendorOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || !offerId) return;
+    if (!user || !offerId) { setLoading(false); return; }
     (async () => {
       const { data } = await supabase
         .from('vendor_offers')
@@ -85,7 +86,7 @@ export default function EditOfferPage() {
         breadcrumbs={[{ label: 'Vendor', href: '/vendor' }, { label: 'Dashboard', href: '/vendor/dashboard' }, { label: 'Offers', href: '/vendor/dashboard/offers' }, { label: 'Edit' }]}
       >
         <div className="glass-card rounded-2xl p-8 text-center">
-          <p className="text-sm text-muted-foreground">This offer could not be found or you don't have access to it.</p>
+          <p className="text-sm text-muted-foreground">This offer could not be found or you don&apos;t have access to it.</p>
         </div>
       </VendorDashboardLayout>
     );
@@ -123,5 +124,19 @@ export default function EditOfferPage() {
         onCancel={() => router.push('/vendor/dashboard/offers')}
       />
     </VendorDashboardLayout>
+  );
+}
+
+export default function EditOfferPage() {
+  return (
+    <Suspense fallback={
+      <VendorDashboardLayout title="Edit Offer" breadcrumbs={[]}>
+        <div className="glass-card animate-pulse rounded-2xl p-6">
+          <div className="h-64 rounded-xl bg-muted" />
+        </div>
+      </VendorDashboardLayout>
+    }>
+      <EditOfferContent />
+    </Suspense>
   );
 }
