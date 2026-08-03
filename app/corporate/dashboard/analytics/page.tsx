@@ -22,7 +22,7 @@ const CHART_COLORS = ['#1e3a5f', '#e8b84a', '#c89730', '#3b82f6', '#8b5cf6', '#e
 
 export default function AnalyticsPage() {
   const { user, loading: authLoading } = useAuth();
-  const { company, departments } = useCompany();
+  const { company, departments, loading: companyLoading } = useCompany();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -32,6 +32,10 @@ export default function AnalyticsPage() {
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
   }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (!authLoading && !companyLoading && user && !company) router.push('/onboarding');
+  }, [authLoading, loading, user, company, router]);
 
   const loadData = useCallback(async () => {
     if (!company) return;
@@ -141,7 +145,7 @@ export default function AnalyticsPage() {
 
   if (authLoading) return <div className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!user) return null;
-  if (!company) { router.push('/onboarding'); return null; }
+  if (!company) return null;
 
   const summaryCards = [
     { label: 'Engagement Rate', value: `${engagementRate}%`, icon: Activity, color: 'bg-primary/10 text-primary' },

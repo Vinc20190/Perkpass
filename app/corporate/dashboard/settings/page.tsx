@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/context';
 import { useCompany } from '@/lib/company/context';
+import { FileUpload } from '@/components/ui/file-upload';
 import { supabase } from '@/lib/supabase/client';
 import { DashboardSidebar, DashboardTopBar } from '@/components/dashboard/sidebar';
 import type { Company, Department } from '@/lib/types';
@@ -21,7 +22,7 @@ const LANGUAGES = [
 
 export default function SettingsPage() {
   const { user, loading: authLoading } = useAuth();
-  const { company, refreshCompany, departments, refreshDepartments } = useCompany();
+  const { company, refreshCompany, departments, refreshDepartments, loading: companyLoading } = useCompany();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -47,6 +48,10 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
   }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (!authLoading && !companyLoading && user && !company) router.push('/onboarding');
+  }, [authLoading, companyLoading, user, company, router]);
 
   useEffect(() => {
     if (company) {
@@ -101,7 +106,7 @@ export default function SettingsPage() {
 
   if (authLoading) return <div className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!user) return null;
-  if (!company) { router.push('/onboarding'); return null; }
+  if (!company) return null;
 
   const inputCls = 'h-11 w-full rounded-xl border border-input bg-card px-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
@@ -135,8 +140,16 @@ export default function SettingsPage() {
                 <Field label="Company name" required>
                   <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
                 </Field>
-                <Field label="Logo URL">
-                  <input type="text" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} className={inputCls} placeholder="https://..." />
+                <Field label="Company Logo">
+                  <FileUpload
+                    bucket="company-assets"
+                    folderId={company.id}
+                    value={logoUrl}
+                    onChange={(url) => setLogoUrl(url)}
+                    label=""
+                    hint="JPG, PNG, WebP up to 5MB"
+                    maxSizeMB={5}
+                  />
                 </Field>
                 <Field label="Address">
                   <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} className={inputCls} />

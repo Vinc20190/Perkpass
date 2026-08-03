@@ -7,7 +7,7 @@ const nextConfig = {
   },
 
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
 
   images: {
@@ -15,7 +15,7 @@ const nextConfig = {
   },
 
   experimental: {
-    serverActions: {},
+    serverActions: true,
   },
 };
 

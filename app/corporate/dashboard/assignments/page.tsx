@@ -30,7 +30,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function AssignmentsPage() {
   const { user, loading: authLoading } = useAuth();
-  const { company } = useCompany();
+  const { company, loading: companyLoading } = useCompany();
   const router = useRouter();
   const [assignments, setAssignments] = useState<AssignmentWithDetails[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -53,6 +53,10 @@ export default function AssignmentsPage() {
   useEffect(() => {
     if (!authLoading && !user) router.push('/login');
   }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (!authLoading && !companyLoading && user && !company) router.push('/onboarding');
+  }, [authLoading, loading, user, company, router]);
 
   const loadData = useCallback(async () => {
     if (!company) return;
@@ -186,7 +190,7 @@ export default function AssignmentsPage() {
 
   if (authLoading) return <div className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!user) return null;
-  if (!company) { router.push('/onboarding'); return null; }
+  if (!company) return null;
 
   return (
     <div className="min-h-screen bg-background">

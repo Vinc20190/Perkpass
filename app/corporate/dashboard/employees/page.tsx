@@ -216,7 +216,7 @@ export default function EmployeesPage() {
     return <div className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
   if (!user) return null;
-  if (!company) { router.push('/onboarding'); return null; }
+  if (!company) return null;
 
   return (
     <div className="min-h-screen bg-background">

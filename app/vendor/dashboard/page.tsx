@@ -97,7 +97,7 @@ export default function VendorDashboardOverview() {
                       }>
                         {offer.status}
                       </Badge>
-                      <Link href={`/vendor/dashboard/offers/${offer.id}`}>
+                      <Link href={`/vendor/dashboard/offers/edit?id=${offer.id}`}>
                         <Button variant="ghost" size="sm">
                           Edit <ArrowRight className="ml-1 h-3.5 w-3.5" />
                         </Button>

@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ImagePlus, Save, Send, Archive, Trash2, ChevronLeft, AlertCircle } from 'lucide-react';
+import { ImagePlus, Save, Send, Archive, Trash2, ChevronLeft, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { uploadFile, deleteFile } from '@/lib/storage/upload';
+import { supabase } from '@/lib/supabase/client';
 import type { VendorOffer, VendorOfferType } from '@/lib/types';
 
 const CATEGORIES = [
@@ -52,6 +54,8 @@ interface OfferEditorProps {
 
 export function OfferEditor({ initialData, onSave, onDelete, onCancel }: OfferEditorProps) {
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imagePath, setImagePath] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [data, setData] = useState<OfferEditorData>({
     id: initialData?.id,
@@ -178,10 +182,16 @@ export function OfferEditor({ initialData, onSave, onDelete, onCancel }: OfferEd
               Offer Image
             </h3>
             <div className={cn(
-              'cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all hover:border-primary',
+              'cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all',
+              uploading ? 'border-primary/50 bg-primary/5' : 'hover:border-primary',
               data.image_url ? 'border-primary/50' : 'border-border'
             )}>
-              {data.image_url ? (
+              {uploading ? (
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Uploading...</p>
+                </div>
+              ) : data.image_url ? (
                 <div className="relative overflow-hidden rounded-xl">
                   <img src={data.image_url} alt="Offer preview" className="mx-auto max-h-48 rounded-xl object-cover" />
                 </div>
@@ -195,9 +205,21 @@ export function OfferEditor({ initialData, onSave, onDelete, onCancel }: OfferEd
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files?.[0];
-                  if (file) update('image_url', URL.createObjectURL(file));
+                  if (!file) return;
+                  setUploading(true);
+                  const userId = (await supabase.auth.getUser()).data.user?.id;
+                  if (!userId) { setUploading(false); return; }
+                  if (imagePath) await deleteFile('offer-images', imagePath);
+                  const result = await uploadFile('offer-images', userId, file, {
+                    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+                    maxSizeMB: 5,
+                  });
+                  setUploading(false);
+                  if (result.error) return;
+                  setImagePath(result.path);
+                  update('image_url', result.url);
                 }}
               />
             </div>

@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { uploadFile, deleteFile } from '@/lib/storage/upload';
 
 const BUSINESS_TYPES = [
   { value: 'restaurant', label: 'Restaurant / Dining' },
@@ -335,24 +336,41 @@ function FileUploadField({
   value: string; onChange: (v: string) => void; accept: string; label: string; error?: string; folder: string;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [currentPath, setCurrentPath] = useState('');
 
   const handleFile = async (file: File) => {
     setUploading(true);
-    try {
-      const ext = file.name.split('.').pop();
-      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('vendor-documents')
-        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+    setUploadError(null);
 
-      if (uploadErr) throw uploadErr;
-
-      const { data: urlData } = supabase.storage.from('vendor-documents').getPublicUrl(fileName);
-      onChange(urlData.publicUrl);
-    } catch {
-      onChange(URL.createObjectURL(file));
+    if (currentPath) {
+      await deleteFile('vendor-assets', currentPath);
     }
+
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) {
+      setUploadError('You must be signed in to upload files.');
+      setUploading(false);
+      return;
+    }
+
+    const isPdf = file.type === 'application/pdf';
+    const result = await uploadFile('vendor-assets', userId, file, {
+      allowedTypes: isPdf
+        ? ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
+        : ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+      maxSizeMB: 5,
+    });
+
     setUploading(false);
+
+    if (result.error) {
+      setUploadError(result.error);
+      return;
+    }
+
+    setCurrentPath(result.path);
+    onChange(result.url);
   };
 
   return (
@@ -390,6 +408,7 @@ function FileUploadField({
           }}
         />
       </label>
+      {uploadError && <FieldError msg={uploadError} />}
       {error && <FieldError msg={error} />}
     </div>
   );
@@ -401,21 +420,22 @@ function GalleryUpload({ urls, onChange }: { urls: string[]; onChange: (urls: st
   const handleFile = async (file: File) => {
     if (urls.length >= 5) return;
     setUploading(true);
-    try {
-      const ext = file.name.split('.').pop();
-      const fileName = `gallery/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('vendor-documents')
-        .upload(fileName, file, { cacheControl: '3600', upsert: false });
 
-      if (uploadErr) throw uploadErr;
-
-      const { data: urlData } = supabase.storage.from('vendor-documents').getPublicUrl(fileName);
-      onChange([...urls, urlData.publicUrl]);
-    } catch {
-      onChange([...urls, URL.createObjectURL(file)]);
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) {
+      setUploading(false);
+      return;
     }
+
+    const result = await uploadFile('vendor-assets', userId, file, {
+      allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+      maxSizeMB: 5,
+    });
+
     setUploading(false);
+
+    if (result.error) return;
+    onChange([...urls, result.url]);
   };
 
   return (

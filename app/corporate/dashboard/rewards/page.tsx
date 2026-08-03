@@ -12,6 +12,7 @@ import { useCompany } from '@/lib/company/context';
 import { supabase } from '@/lib/supabase/client';
 import { DashboardSidebar, DashboardTopBar } from '@/components/dashboard/sidebar';
 import { formatCents, formatDate } from '@/lib/utils';
+import { FileUpload } from '@/components/ui/file-upload';
 import type { RewardCatalogItem } from '@/lib/types';
 
 const CATEGORIES = [
@@ -118,7 +119,7 @@ export default function RewardsPage() {
 
   if (authLoading) return <div className="grid min-h-screen place-items-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   if (!user) return null;
-  if (!company) { router.push('/onboarding'); return null; }
+  if (!company) return null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -258,6 +259,7 @@ export default function RewardsPage() {
         open={modalOpen}
         editing={editing}
         currencyCode={company.currency_code}
+        companyId={company.id}
         saving={saving}
         error={error}
         onClose={() => { setModalOpen(false); setEditing(null); setError(null); }}
@@ -268,11 +270,12 @@ export default function RewardsPage() {
 }
 
 function RewardModal({
-  open, editing, currencyCode, saving, error, onClose, onSave,
+  open, editing, currencyCode, companyId, saving, error, onClose, onSave,
 }: {
   open: boolean;
   editing: RewardCatalogItem | null;
   currencyCode: string;
+  companyId: string;
   saving: boolean;
   error: string | null;
   onClose: () => void;
@@ -281,6 +284,7 @@ function RewardModal({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imagePath, setImagePath] = useState('');
   const [category, setCategory] = useState('custom');
   const [valueUsd, setValueUsd] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
@@ -350,10 +354,17 @@ function RewardModal({
               <label className="mb-1.5 block text-sm font-semibold text-foreground">Description</label>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className={inputCls} placeholder="A free coffee at any partner cafe" />
             </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold text-foreground">Image URL</label>
-              <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className={inputCls} placeholder="https://images.pexels.com/..." />
-            </div>
+            <FileUpload
+              bucket="reward-images"
+              folderId={companyId}
+              value={imageUrl}
+              onChange={(url) => setImageUrl(url)}
+              path={imagePath}
+              onPathChange={(p) => setImagePath(p)}
+              label="Reward Image"
+              hint="JPG, PNG, WebP up to 5MB"
+              maxSizeMB={5}
+            />
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-foreground">Category</label>

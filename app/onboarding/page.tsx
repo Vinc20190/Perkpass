@@ -12,6 +12,7 @@ import { useAuth } from '@/lib/auth/context';
 import { slugify, cn } from '@/lib/utils';
 import { Logo } from '@/components/brand/logo';
 import { Spotlight } from '@/components/ui/spotlight';
+import { FileUpload } from '@/components/ui/file-upload';
 
 interface DbCountry {
   id: string;
@@ -41,6 +42,8 @@ export default function OnboardingPage() {
   const [countries, setCountries] = useState<DbCountry[]>([]);
   const [countrySearch, setCountrySearch] = useState('');
   const [countryRegion, setCountryRegion] = useState('All');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoPath, setLogoPath] = useState('');
   const [data, setData] = useState({
     companyName: '',
     companySize: '1-10',
@@ -108,6 +111,7 @@ export default function OnboardingPage() {
       .from('companies')
       .insert({
         name: data.companyName,
+          logo_url: logoUrl || null,
         slug,
         country_id: country.id,
         currency_code: country.currency_code,
@@ -214,6 +218,7 @@ export default function OnboardingPage() {
             >
               {/* Step 0: Company */}
               {step === 0 && (
+                <>
                 <div className="space-y-5">
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold">Company name</label>
@@ -259,6 +264,20 @@ export default function OnboardingPage() {
                     </select>
                   </div>
                 </div>
+                  <div className="mt-6">
+                    <FileUpload
+                      bucket="company-assets"
+                      folderId={user?.id ?? "temp"}
+                      value={logoUrl}
+                      onChange={(url) => setLogoUrl(url)}
+                      path={logoPath}
+                      onPathChange={(p) => setLogoPath(p)}
+                      label="Company Logo"
+                      hint="JPG, PNG, WebP up to 5MB"
+                      maxSizeMB={5}
+                    />
+                  </div>
+                </>
               )}
 
               {/* Step 1: Country */}
